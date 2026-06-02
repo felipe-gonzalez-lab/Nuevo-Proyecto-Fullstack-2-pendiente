@@ -1,0 +1,50 @@
+body {
+  padding-top: 56px;
+}
+
+.hero-section {
+  background: linear-gradient(135deg, #111827, #1d4ed8);
+}
+
+.carousel-img {
+  height: 420px;
+  object-fit: cover;
+}
+
+.product-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.product-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.15);
+}
+
+.product-img {
+  height: 220px;
+  object-fit: cover;
+}
+
+.card-title {
+  min-height: 48px;
+}
+
+footer {
+  font-size: 0.95rem;
+}
+
+@media (max-width: 768px) {
+  .hero-section .min-vh-100 {
+    min-height: auto !important;
+    padding-top: 4rem;
+    padding-bottom: 4rem;
+  }
+
+  .carousel-img {
+    height: 260px;
+  }
+
+  .display-4 {
+    font-size: 2.2rem;
+  }
+}
