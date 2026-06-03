@@ -63,6 +63,15 @@ function App() {
   const [categoria, setCategoria] = useState('Todas')
   const [carrito, setCarrito] = useState([])
 
+  const [formulario, setFormulario] = useState({
+    nombre: '',
+    correo: '',
+    mensaje: ''
+  })
+
+  const [errores, setErrores] = useState({})
+  const [mensajeEnviado, setMensajeEnviado] = useState('')
+
   const productosFiltrados = productosIniciales.filter((producto) => {
     const coincideNombre = producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
     const coincideCategoria = categoria === 'Todas' || producto.categoria === categoria
@@ -81,6 +90,53 @@ function App() {
       setCarrito(carritoActualizado)
     } else {
       setCarrito([...carrito, { ...producto, cantidad: 1 }])
+    }
+  }
+
+  const manejarCambioFormulario = (e) => {
+    const { name, value } = e.target
+
+    setFormulario({
+      ...formulario,
+      [name]: value
+    })
+  }
+
+  const validarFormulario = () => {
+    const nuevosErrores = {}
+
+    if (formulario.nombre.trim().length < 3) {
+      nuevosErrores.nombre = 'El nombre debe tener al menos 3 caracteres.'
+    }
+
+    const correoValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formulario.correo)
+
+    if (!correoValido) {
+      nuevosErrores.correo = 'Ingresa un correo electrónico válido.'
+    }
+
+    if (formulario.mensaje.trim().length < 10) {
+      nuevosErrores.mensaje = 'El mensaje debe tener al menos 10 caracteres.'
+    }
+
+    return nuevosErrores
+  }
+
+  const manejarEnvioFormulario = (e) => {
+    e.preventDefault()
+
+    const erroresValidacion = validarFormulario()
+    setErrores(erroresValidacion)
+
+    if (Object.keys(erroresValidacion).length === 0) {
+      setMensajeEnviado('Tu consulta fue enviada correctamente.')
+      setFormulario({
+        nombre: '',
+        correo: '',
+        mensaje: ''
+      })
+    } else {
+      setMensajeEnviado('')
     }
   }
 
@@ -135,7 +191,9 @@ function App() {
           <div className="container py-5">
             <div className="row align-items-center min-vh-100">
               <div className="col-md-6">
-                <h1 className="display-4 fw-bold">Tecnología para estudiar, trabajar y crear</h1>
+                <h1 className="display-4 fw-bold">
+                  Tecnología para estudiar, trabajar y crear
+                </h1>
                 <p className="lead">
                   Encuentra notebooks, accesorios y monitores con una experiencia de compra simple,
                   rápida y segura.
@@ -146,7 +204,11 @@ function App() {
               </div>
 
               <div className="col-md-6">
-                <div id="carruselTecnologia" className="carousel slide shadow rounded" data-bs-ride="carousel">
+                <div
+                  id="carruselTecnologia"
+                  className="carousel slide shadow rounded"
+                  data-bs-ride="carousel"
+                >
                   <div className="carousel-inner rounded">
                     <div className="carousel-item active">
                       <img
@@ -206,7 +268,9 @@ function App() {
 
           <div className="row mb-4 g-3">
             <div className="col-md-6">
-              <label htmlFor="busqueda" className="form-label">Buscar producto</label>
+              <label htmlFor="busqueda" className="form-label">
+                Buscar producto
+              </label>
               <input
                 id="busqueda"
                 type="text"
@@ -218,7 +282,9 @@ function App() {
             </div>
 
             <div className="col-md-6">
-              <label htmlFor="categoria" className="form-label">Filtrar por categoría</label>
+              <label htmlFor="categoria" className="form-label">
+                Filtrar por categoría
+              </label>
               <select
                 id="categoria"
                 className="form-select"
@@ -297,7 +363,9 @@ function App() {
                 </table>
 
                 <div className="text-end">
-                  <h3 className="h4">Total: ${totalCarrito.toLocaleString('es-CL')}</h3>
+                  <h3 className="h4">
+                    Total: ${totalCarrito.toLocaleString('es-CL')}
+                  </h3>
                   <button className="btn btn-success">
                     Simular pedido
                   </button>
@@ -312,41 +380,78 @@ function App() {
             <div className="col-lg-8">
               <h2 className="fw-bold text-center mb-4">Formulario de contacto</h2>
 
-              <form className="card shadow-sm p-4">
+              <form
+                className="card shadow-sm p-4"
+                onSubmit={manejarEnvioFormulario}
+                noValidate
+              >
                 <div className="mb-3">
-                  <label htmlFor="nombre" className="form-label">Nombre completo</label>
+                  <label htmlFor="nombre" className="form-label">
+                    Nombre completo
+                  </label>
                   <input
                     type="text"
-                    className="form-control"
+                    className={`form-control ${errores.nombre ? 'is-invalid' : ''}`}
                     id="nombre"
+                    name="nombre"
                     placeholder="Ingresa tu nombre"
                     autoComplete="name"
-                    required
+                    value={formulario.nombre}
+                    onChange={manejarCambioFormulario}
                   />
+                  {errores.nombre && (
+                    <div className="invalid-feedback">
+                      {errores.nombre}
+                    </div>
+                  )}
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="correo" className="form-label">Correo electrónico</label>
+                  <label htmlFor="correo" className="form-label">
+                    Correo electrónico
+                  </label>
                   <input
                     type="email"
-                    className="form-control"
+                    className={`form-control ${errores.correo ? 'is-invalid' : ''}`}
                     id="correo"
+                    name="correo"
                     placeholder="nombre@correo.com"
                     autoComplete="email"
-                    required
+                    value={formulario.correo}
+                    onChange={manejarCambioFormulario}
                   />
+                  {errores.correo && (
+                    <div className="invalid-feedback">
+                      {errores.correo}
+                    </div>
+                  )}
                 </div>
 
                 <div className="mb-3">
-                  <label htmlFor="mensaje" className="form-label">Mensaje</label>
+                  <label htmlFor="mensaje" className="form-label">
+                    Mensaje
+                  </label>
                   <textarea
-                    className="form-control"
+                    className={`form-control ${errores.mensaje ? 'is-invalid' : ''}`}
                     id="mensaje"
+                    name="mensaje"
                     rows="4"
                     placeholder="Escribe tu consulta"
-                    required
+                    value={formulario.mensaje}
+                    onChange={manejarCambioFormulario}
                   ></textarea>
+                  {errores.mensaje && (
+                    <div className="invalid-feedback">
+                      {errores.mensaje}
+                    </div>
+                  )}
                 </div>
+
+                {mensajeEnviado && (
+                  <div className="alert alert-success" role="alert">
+                    {mensajeEnviado}
+                  </div>
+                )}
 
                 <button type="submit" className="btn btn-primary">
                   Enviar consulta
