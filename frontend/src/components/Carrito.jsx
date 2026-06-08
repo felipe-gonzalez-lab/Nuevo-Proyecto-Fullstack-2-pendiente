@@ -4,12 +4,20 @@ function Carrito({
   aumentarCantidad,
   disminuirCantidad,
   eliminarDelCarrito,
-  vaciarCarrito
+  vaciarCarrito,
+  simularPedido,
+  mensajePedido
 }) {
   return (
     <section id="carrito" className="bg-light py-5">
       <div className="container">
         <h2 className="fw-bold text-center mb-4">Carrito de compras</h2>
+
+        {mensajePedido && (
+          <div className="alert alert-success text-center" role="alert">
+            {mensajePedido}
+          </div>
+        )}
 
         {carrito.length === 0 ? (
           <p className="text-center text-muted">Tu carrito está vacío.</p>
@@ -85,7 +93,10 @@ function Carrito({
                   Total: ${totalCarrito.toLocaleString('es-CL')}
                 </h3>
 
-                <button className="btn btn-success">
+                <button
+                  className="btn btn-success"
+                  onClick={simularPedido}
+                >
                   Simular pedido
                 </button>
               </div>

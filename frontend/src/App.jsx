@@ -21,6 +21,7 @@ function App() {
 
   const [errores, setErrores] = useState({})
   const [mensajeEnviado, setMensajeEnviado] = useState('')
+  const [mensajePedido, setMensajePedido] = useState('')
 
   const productosFiltrados = productosIniciales.filter((producto) => {
     const coincideNombre = producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
@@ -71,6 +72,16 @@ function App() {
   }
 
   const vaciarCarrito = () => {
+    setCarrito([])
+  }
+
+  const simularPedido = () => {
+    if (carrito.length === 0) {
+      setMensajePedido('No puedes crear un pedido con el carrito vacío.')
+      return
+    }
+
+    setMensajePedido('Pedido creado correctamente. Estado inicial: Pendiente.')
     setCarrito([])
   }
 
@@ -148,6 +159,8 @@ function App() {
           disminuirCantidad={disminuirCantidad}
           eliminarDelCarrito={eliminarDelCarrito}
           vaciarCarrito={vaciarCarrito}
+          simularPedido={simularPedido}
+          mensajePedido={mensajePedido}
         />
         <FormularioContacto
           formulario={formulario}
