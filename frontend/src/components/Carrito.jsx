@@ -1,4 +1,11 @@
-function Carrito({ carrito, totalCarrito }) {
+function Carrito({
+  carrito,
+  totalCarrito,
+  aumentarCantidad,
+  disminuirCantidad,
+  eliminarDelCarrito,
+  vaciarCarrito
+}) {
   return (
     <section id="carrito" className="bg-light py-5">
       <div className="container">
@@ -15,6 +22,7 @@ function Carrito({ carrito, totalCarrito }) {
                   <th>Cantidad</th>
                   <th>Precio unitario</th>
                   <th>Subtotal</th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
 
@@ -22,24 +30,65 @@ function Carrito({ carrito, totalCarrito }) {
                 {carrito.map((producto) => (
                   <tr key={producto.id}>
                     <td>{producto.nombre}</td>
-                    <td>{producto.cantidad}</td>
+
+                    <td>
+                      <div className="d-flex align-items-center gap-2">
+                        <button
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => disminuirCantidad(producto.id)}
+                          aria-label={`Disminuir cantidad de ${producto.nombre}`}
+                        >
+                          -
+                        </button>
+
+                        <span>{producto.cantidad}</span>
+
+                        <button
+                          className="btn btn-sm btn-outline-secondary"
+                          onClick={() => aumentarCantidad(producto.id)}
+                          aria-label={`Aumentar cantidad de ${producto.nombre}`}
+                        >
+                          +
+                        </button>
+                      </div>
+                    </td>
+
                     <td>${producto.precio.toLocaleString('es-CL')}</td>
+
                     <td>
                       ${(producto.precio * producto.cantidad).toLocaleString('es-CL')}
+                    </td>
+
+                    <td>
+                      <button
+                        className="btn btn-sm btn-outline-danger"
+                        onClick={() => eliminarDelCarrito(producto.id)}
+                      >
+                        Eliminar
+                      </button>
                     </td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            <div className="text-end">
-              <h3 className="h4">
-                Total: ${totalCarrito.toLocaleString('es-CL')}
-              </h3>
-
-              <button className="btn btn-success">
-                Simular pedido
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+              <button
+                className="btn btn-outline-danger"
+                onClick={vaciarCarrito}
+              >
+                Vaciar carrito
               </button>
+
+              <div className="text-md-end">
+                <h3 className="h4">
+                  Total: ${totalCarrito.toLocaleString('es-CL')}
+                </h3>
+
+                <button className="btn btn-success">
+                  Simular pedido
+                </button>
+              </div>
             </div>
           </div>
         )}

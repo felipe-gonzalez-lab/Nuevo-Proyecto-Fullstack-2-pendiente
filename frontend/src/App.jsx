@@ -43,6 +43,37 @@ function App() {
     }
   }
 
+  const aumentarCantidad = (idProducto) => {
+    const carritoActualizado = carrito.map((item) =>
+      item.id === idProducto
+        ? { ...item, cantidad: item.cantidad + 1 }
+        : item
+  )
+
+    setCarrito(carritoActualizado)
+  }
+
+  const disminuirCantidad = (idProducto) => {
+    const carritoActualizado = carrito
+      .map((item) =>
+        item.id === idProducto
+          ? { ...item, cantidad: item.cantidad - 1 }
+          : item
+      )
+      .filter((item) => item.cantidad > 0)
+    
+    setCarrito(carritoActualizado)
+  }
+
+  const eliminarDelCarrito = (idProducto) => {
+    const carritoActualizado = carrito.filter((item) => item.id !== idProducto)
+    setCarrito(carritoActualizado)
+  }
+
+  const vaciarCarrito = () => {
+    setCarrito([])
+  }
+
   const manejarCambioFormulario = (e) => {
     const { name, value } = e.target
 
@@ -113,6 +144,10 @@ function App() {
         <Carrito
           carrito={carrito}
           totalCarrito={totalCarrito}
+          aumentarCantidad={aumentarCantidad}
+          disminuirCantidad={disminuirCantidad}
+          eliminarDelCarrito={eliminarDelCarrito}
+          vaciarCarrito={vaciarCarrito}
         />
         <FormularioContacto
           formulario={formulario}
@@ -124,7 +159,7 @@ function App() {
       </main>
       
       <Footer />
-
+      
     </>
   )
 }
