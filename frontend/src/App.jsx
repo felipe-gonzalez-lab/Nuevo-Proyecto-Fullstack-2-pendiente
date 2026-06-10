@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
 import { productosIniciales } from './data/productos'
 import Navbar from './components/Navbar'
@@ -7,6 +8,7 @@ import CatalogoProductos from './components/CatalogoProductos'
 import Carrito from './components/Carrito'
 import FormularioContacto from './components/FormularioContacto'
 import Footer from './components/Footer'
+import DetalleProducto from './pages/DetalleProducto'
 
 function App() {
   const [busqueda, setBusqueda] = useState('')
@@ -49,7 +51,7 @@ function App() {
       item.id === idProducto
         ? { ...item, cantidad: item.cantidad + 1 }
         : item
-  )
+    )
 
     setCarrito(carritoActualizado)
   }
@@ -62,7 +64,7 @@ function App() {
           : item
       )
       .filter((item) => item.cantidad > 0)
-    
+
     setCarrito(carritoActualizado)
   }
 
@@ -138,42 +140,55 @@ function App() {
   )
 
   return (
-    <>
+    <BrowserRouter>
       <Navbar />
 
-      <main id="inicio">
-        <Hero />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <main id="inicio">
+              <Hero />
 
-        <CatalogoProductos
-          busqueda={busqueda}
-          setBusqueda={setBusqueda}
-          categoria={categoria}
-          setCategoria={setCategoria}
-          productosFiltrados={productosFiltrados}
-          agregarAlCarrito={agregarAlCarrito}
+              <CatalogoProductos
+                busqueda={busqueda}
+                setBusqueda={setBusqueda}
+                categoria={categoria}
+                setCategoria={setCategoria}
+                productosFiltrados={productosFiltrados}
+                agregarAlCarrito={agregarAlCarrito}
+              />
+
+              <Carrito
+                carrito={carrito}
+                totalCarrito={totalCarrito}
+                aumentarCantidad={aumentarCantidad}
+                disminuirCantidad={disminuirCantidad}
+                eliminarDelCarrito={eliminarDelCarrito}
+                vaciarCarrito={vaciarCarrito}
+                simularPedido={simularPedido}
+                mensajePedido={mensajePedido}
+              />
+
+              <FormularioContacto
+                formulario={formulario}
+                errores={errores}
+                mensajeEnviado={mensajeEnviado}
+                manejarCambioFormulario={manejarCambioFormulario}
+                manejarEnvioFormulario={manejarEnvioFormulario}
+              />
+            </main>
+          }
         />
-        <Carrito
-          carrito={carrito}
-          totalCarrito={totalCarrito}
-          aumentarCantidad={aumentarCantidad}
-          disminuirCantidad={disminuirCantidad}
-          eliminarDelCarrito={eliminarDelCarrito}
-          vaciarCarrito={vaciarCarrito}
-          simularPedido={simularPedido}
-          mensajePedido={mensajePedido}
+
+        <Route
+          path="/producto/:id"
+          element={<DetalleProducto agregarAlCarrito={agregarAlCarrito} />}
         />
-        <FormularioContacto
-          formulario={formulario}
-          errores={errores}
-          mensajeEnviado={mensajeEnviado}
-          manejarCambioFormulario={manejarCambioFormulario}
-          manejarEnvioFormulario={manejarEnvioFormulario}
-        />
-      </main>
-      
+      </Routes>
+
       <Footer />
-      
-    </>
+    </BrowserRouter>
   )
 }
 

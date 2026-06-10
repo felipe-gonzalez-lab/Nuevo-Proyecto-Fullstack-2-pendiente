@@ -1,3 +1,5 @@
+import { Link } from 'react-router-dom'
+
 function CatalogoProductos({
   busqueda,
   setBusqueda,
@@ -82,12 +84,21 @@ function CatalogoProductos({
                     <strong>Stock:</strong> {producto.stock} unidades
                   </p>
 
-                  <button
-                    className="btn btn-outline-primary mt-auto"
-                    onClick={() => agregarAlCarrito(producto)}
-                  >
-                    Agregar al carrito
-                  </button>
+                  <div className="mt-auto d-flex gap-2">
+                    <Link
+                      to={`/producto/${producto.id}`}
+                      className="btn btn-outline-secondary"
+                    >
+                      Ver detalle
+                    </Link>
+
+                    <button
+                      className="btn btn-outline-primary"
+                      onClick={() => agregarAlCarrito(producto)}
+                    >
+                      Agregar al carrito
+                    </button>
+                  </div>
                 </div>
               </div>
             </article>

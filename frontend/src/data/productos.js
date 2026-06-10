@@ -54,3 +54,5 @@ export const productosIniciales = [
     descripcion: 'Monitor Full HD para estudio, oficina y entretenimiento.'
   }
 ]
+
+export default productosIniciales
