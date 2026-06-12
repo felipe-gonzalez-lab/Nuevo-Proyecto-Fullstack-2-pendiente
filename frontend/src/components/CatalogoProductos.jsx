@@ -89,7 +89,7 @@ function CatalogoProductos({
                       to={`/producto/${producto.id}`}
                       className="btn btn-outline-secondary"
                     >
-                      Ver detalle
+                      Ver producto
                     </Link>
 
                     <button
