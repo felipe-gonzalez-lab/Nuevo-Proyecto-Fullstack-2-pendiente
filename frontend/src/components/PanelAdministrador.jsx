@@ -1,3 +1,5 @@
+import GraficoStock from './GraficoStock'
+
 function PanelAdministrador({
   productos,
   actualizarStock,
@@ -12,7 +14,8 @@ function PanelAdministrador({
 
           <p className="text-muted">
             Desde esta sección el administrador puede gestionar productos,
-            revisar el stock disponible y actualizar el estado de los pedidos.
+            revisar el stock disponible, visualizar información relevante y
+            actualizar el estado de los pedidos.
           </p>
 
           <div className="row g-3 mt-4">
@@ -54,6 +57,8 @@ function PanelAdministrador({
               </div>
             </div>
           </div>
+
+          <GraficoStock productos={productos} />
 
           <hr className="my-4" />
 
