@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
 import './App.css'
 import { productosIniciales } from './data/productos'
 import Navbar from './components/Navbar'
@@ -10,7 +10,7 @@ import FormularioContacto from './components/FormularioContacto'
 import Footer from './components/Footer'
 import DetalleProducto from './pages/DetalleProducto'
 import SelectorUsuario from './components/SelectorUsuario'
-import PanelAdministrador from './components/PanelAdministrador'
+import AdminPage from './pages/AdminPage'
 
 function App() {
   const [busqueda, setBusqueda] = useState('')
@@ -256,6 +256,14 @@ function App() {
         setUsuarioActual={setUsuarioActual}
       />
 
+      {usuarioActual === 'admin' && (
+        <div className="container my-3 text-end">
+          <Link to="/admin" className="btn btn-dark">
+            Ir al panel administrador
+          </Link>
+        </div>
+      )}
+
       <Routes>
         <Route
           path="/"
@@ -290,15 +298,6 @@ function App() {
                 manejarCambioFormulario={manejarCambioFormulario}
                 manejarEnvioFormulario={manejarEnvioFormulario}
               />
-
-              {usuarioActual === 'admin' && (
-                <PanelAdministrador
-                  productos={productos}
-                  actualizarStock={actualizarStock}
-                  pedidos={pedidos}
-                  actualizarEstadoPedido={actualizarEstadoPedido}
-                />
-              )}
             </main>
           }
         />
@@ -309,6 +308,18 @@ function App() {
             <DetalleProducto
               productos={productos}
               agregarAlCarrito={agregarAlCarrito}
+            />
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            <AdminPage
+              productos={productos}
+              actualizarStock={actualizarStock}
+              pedidos={pedidos}
+              actualizarEstadoPedido={actualizarEstadoPedido}
             />
           }
         />
