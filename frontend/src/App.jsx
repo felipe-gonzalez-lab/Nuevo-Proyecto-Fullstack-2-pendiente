@@ -17,6 +17,8 @@ function App() {
   const [categoria, setCategoria] = useState('Todas')
   const [carrito, setCarrito] = useState([])
   const [usuarioActual, setUsuarioActual] = useState('cliente')
+  const [productos, setProductos] = useState(productosIniciales)
+  const [pedidos, setPedidos] = useState([])
 
   const [formulario, setFormulario] = useState({
     nombre: '',
@@ -28,13 +30,20 @@ function App() {
   const [mensajeEnviado, setMensajeEnviado] = useState('')
   const [mensajePedido, setMensajePedido] = useState('')
 
-  const productosFiltrados = productosIniciales.filter((producto) => {
+  const productosFiltrados = productos.filter((producto) => {
     const coincideNombre = producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
     const coincideCategoria = categoria === 'Todas' || producto.categoria === categoria
     return coincideNombre && coincideCategoria
   })
 
   const agregarAlCarrito = (producto) => {
+    const productoActual = productos.find((item) => item.id === producto.id)
+
+    if (!productoActual || productoActual.stock <= 0) {
+      setMensajePedido('No hay stock disponible para este producto.')
+      return
+    }
+
     const productoExiste = carrito.find((item) => item.id === producto.id)
 
     if (productoExiste) {
@@ -46,21 +55,49 @@ function App() {
 
       setCarrito(carritoActualizado)
     } else {
-      setCarrito([...carrito, { ...producto, cantidad: 1 }])
+      setCarrito([...carrito, { ...productoActual, cantidad: 1 }])
     }
+
+    const productosActualizados = productos.map((item) =>
+      item.id === producto.id
+        ? { ...item, stock: item.stock - 1 }
+        : item
+    )
+
+    setProductos(productosActualizados)
+    setMensajePedido('')
   }
 
   const aumentarCantidad = (idProducto) => {
+    const productoActual = productos.find((producto) => producto.id === idProducto)
+
+    if (!productoActual || productoActual.stock <= 0) {
+      setMensajePedido('No hay más stock disponible para este producto.')
+      return
+    }
+
     const carritoActualizado = carrito.map((item) =>
       item.id === idProducto
         ? { ...item, cantidad: item.cantidad + 1 }
         : item
     )
 
+    const productosActualizados = productos.map((producto) =>
+      producto.id === idProducto
+        ? { ...producto, stock: producto.stock - 1 }
+        : producto
+    )
+
     setCarrito(carritoActualizado)
+    setProductos(productosActualizados)
+    setMensajePedido('')
   }
 
   const disminuirCantidad = (idProducto) => {
+    const productoEnCarrito = carrito.find((item) => item.id === idProducto)
+
+    if (!productoEnCarrito) return
+
     const carritoActualizado = carrito
       .map((item) =>
         item.id === idProducto
@@ -69,16 +106,52 @@ function App() {
       )
       .filter((item) => item.cantidad > 0)
 
+    const productosActualizados = productos.map((producto) =>
+      producto.id === idProducto
+        ? { ...producto, stock: producto.stock + 1 }
+        : producto
+    )
+
     setCarrito(carritoActualizado)
+    setProductos(productosActualizados)
+    setMensajePedido('')
   }
 
   const eliminarDelCarrito = (idProducto) => {
+    const productoEliminado = carrito.find((item) => item.id === idProducto)
+
+    if (productoEliminado) {
+      const productosActualizados = productos.map((producto) =>
+        producto.id === idProducto
+          ? { ...producto, stock: producto.stock + productoEliminado.cantidad }
+          : producto
+      )
+
+      setProductos(productosActualizados)
+    }
+
     const carritoActualizado = carrito.filter((item) => item.id !== idProducto)
     setCarrito(carritoActualizado)
+    setMensajePedido('')
   }
 
   const vaciarCarrito = () => {
+    const productosActualizados = productos.map((producto) => {
+      const productoEnCarrito = carrito.find((item) => item.id === producto.id)
+
+      if (productoEnCarrito) {
+        return {
+          ...producto,
+          stock: producto.stock + productoEnCarrito.cantidad
+        }
+      }
+
+      return producto
+    })
+
+    setProductos(productosActualizados)
     setCarrito([])
+    setMensajePedido('')
   }
 
   const simularPedido = () => {
@@ -87,8 +160,39 @@ function App() {
       return
     }
 
+    const nuevoPedido = {
+      id: Date.now(),
+      productos: carrito,
+      total: totalCarrito,
+      estado: 'Pendiente',
+      fecha: new Date().toLocaleDateString('es-CL')
+    }
+
+    setPedidos([...pedidos, nuevoPedido])
     setMensajePedido('Pedido creado correctamente. Estado inicial: Pendiente.')
     setCarrito([])
+  }
+
+  const actualizarEstadoPedido = (idPedido, nuevoEstado) => {
+    const pedidosActualizados = pedidos.map((pedido) =>
+      pedido.id === idPedido
+        ? { ...pedido, estado: nuevoEstado }
+        : pedido
+    )
+
+    setPedidos(pedidosActualizados)
+  }
+
+  const actualizarStock = (idProducto, nuevoStock) => {
+    if (nuevoStock < 0) return
+
+    const productosActualizados = productos.map((producto) =>
+      producto.id === idProducto
+        ? { ...producto, stock: nuevoStock }
+        : producto
+    )
+
+    setProductos(productosActualizados)
   }
 
   const manejarCambioFormulario = (e) => {
@@ -187,14 +291,26 @@ function App() {
                 manejarEnvioFormulario={manejarEnvioFormulario}
               />
 
-              {usuarioActual === 'admin' && <PanelAdministrador />}
+              {usuarioActual === 'admin' && (
+                <PanelAdministrador
+                  productos={productos}
+                  actualizarStock={actualizarStock}
+                  pedidos={pedidos}
+                  actualizarEstadoPedido={actualizarEstadoPedido}
+                />
+              )}
             </main>
           }
         />
 
         <Route
           path="/producto/:id"
-          element={<DetalleProducto agregarAlCarrito={agregarAlCarrito} />}
+          element={
+            <DetalleProducto
+              productos={productos}
+              agregarAlCarrito={agregarAlCarrito}
+            />
+          }
         />
       </Routes>
 
