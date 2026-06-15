@@ -10,6 +10,7 @@ import FormularioContacto from './components/FormularioContacto'
 import Footer from './components/Footer'
 import DetalleProducto from './pages/DetalleProducto'
 import SelectorUsuario from './components/SelectorUsuario'
+import PanelAdministrador from './components/PanelAdministrador'
 
 function App() {
   const [busqueda, setBusqueda] = useState('')
@@ -185,6 +186,8 @@ function App() {
                 manejarCambioFormulario={manejarCambioFormulario}
                 manejarEnvioFormulario={manejarEnvioFormulario}
               />
+
+              {usuarioActual === 'admin' && <PanelAdministrador />}
             </main>
           }
         />
