@@ -9,11 +9,13 @@ import Carrito from './components/Carrito'
 import FormularioContacto from './components/FormularioContacto'
 import Footer from './components/Footer'
 import DetalleProducto from './pages/DetalleProducto'
+import SelectorUsuario from './components/SelectorUsuario'
 
 function App() {
   const [busqueda, setBusqueda] = useState('')
   const [categoria, setCategoria] = useState('Todas')
   const [carrito, setCarrito] = useState([])
+  const [usuarioActual, setUsuarioActual] = useState('cliente')
 
   const [formulario, setFormulario] = useState({
     nombre: '',
@@ -40,6 +42,7 @@ function App() {
           ? { ...item, cantidad: item.cantidad + 1 }
           : item
       )
+
       setCarrito(carritoActualizado)
     } else {
       setCarrito([...carrito, { ...producto, cantidad: 1 }])
@@ -142,6 +145,11 @@ function App() {
   return (
     <BrowserRouter>
       <Navbar />
+
+      <SelectorUsuario
+        usuarioActual={usuarioActual}
+        setUsuarioActual={setUsuarioActual}
+      />
 
       <Routes>
         <Route
