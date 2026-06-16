@@ -11,6 +11,12 @@ import Footer from './components/Footer'
 import DetalleProducto from './pages/DetalleProducto'
 import AdminPage from './pages/AdminPage'
 import LoginPage from './pages/LoginPage'
+import {
+  obtenerProductos,
+  crearProducto,
+  actualizarProducto,
+  eliminarProductoPorId
+} from './services/productosService'
 
 function App() {
   const [busqueda, setBusqueda] = useState('')
@@ -18,10 +24,7 @@ function App() {
   const [carrito, setCarrito] = useState([])
   const [direccionPedido, setDireccionPedido] = useState('')
 
-  const [productos, setProductos] = useState(() => {
-    const productosGuardados = localStorage.getItem('productos')
-    return productosGuardados ? JSON.parse(productosGuardados) : productosIniciales
-  })
+  const [productos, setProductos] = useState([])
 
   const [pedidos, setPedidos] = useState(() => {
     const pedidosGuardados = localStorage.getItem('pedidos')
@@ -59,8 +62,18 @@ function App() {
   ]
 
   useEffect(() => {
-    localStorage.setItem('productos', JSON.stringify(productos))
-  }, [productos])
+    const cargarProductos = async () => {
+      try {
+        const productosBackend = await obtenerProductos()
+        setProductos(productosBackend)
+      } catch (error) {
+        console.error(error)
+        setProductos(productosIniciales)
+      }
+    }
+
+    cargarProductos()
+  }, [])
 
   useEffect(() => {
     localStorage.setItem('pedidos', JSON.stringify(pedidos))
@@ -267,7 +280,7 @@ function App() {
     setPedidos(pedidosActualizados)
   }
 
-  const actualizarStock = (idProducto, nuevoStock) => {
+  const actualizarStock = async (idProducto, nuevoStock) => {
     const stockValidado =
       nuevoStock === '' || nuevoStock === null ? 0 : Number(nuevoStock)
 
@@ -276,64 +289,84 @@ function App() {
     if (stockValidado > 50) return
     if (!Number.isInteger(stockValidado)) return
 
-    const productosActualizados = productos.map((producto) =>
-      producto.id === idProducto
-        ? { ...producto, stock: stockValidado }
-        : producto
-    )
+    const productoActual = productos.find((producto) => producto.id === idProducto)
 
-    setProductos(productosActualizados)
-  }
+    if (!productoActual) return
 
-  const agregarProducto = (nuevoProducto) => {
-    const productoConId = {
-      ...nuevoProducto,
-      id: Date.now()
+    const productoActualizado = {
+      ...productoActual,
+      stock: stockValidado
     }
 
-    setProductos([...productos, productoConId])
+    try {
+      await actualizarProducto(idProducto, productoActualizado)
+
+      const productosActualizados = await obtenerProductos()
+      setProductos(productosActualizados)
+    } catch (error) {
+      alert(error.message)
+    }
   }
 
-  const editarProducto = (productoEditado) => {
-    const productosActualizados = productos.map((producto) =>
-      producto.id === productoEditado.id ? productoEditado : producto
-    )
+  const agregarProducto = async (nuevoProducto) => {
+    try {
+      await crearProducto(nuevoProducto)
 
-    const carritoActualizado = carrito.map((producto) =>
-      producto.id === productoEditado.id
-        ? {
-            ...producto,
-            nombre: productoEditado.nombre,
-            categoria: productoEditado.categoria,
-            precio: productoEditado.precio,
-            imagen: productoEditado.imagen,
-            descripcion: productoEditado.descripcion
-          }
-        : producto
-    )
-
-    setProductos(productosActualizados)
-    setCarrito(carritoActualizado)
+      const productosActualizados = await obtenerProductos()
+      setProductos(productosActualizados)
+    } catch (error) {
+      alert(error.message)
+    }
   }
 
-  const eliminarProducto = (idProducto) => {
+  const editarProducto = async (productoEditado) => {
+    try {
+      await actualizarProducto(productoEditado.id, productoEditado)
+
+      const productosActualizados = await obtenerProductos()
+      setProductos(productosActualizados)
+
+      const carritoActualizado = carrito.map((producto) =>
+        producto.id === productoEditado.id
+          ? {
+              ...producto,
+              nombre: productoEditado.nombre,
+              categoria: productoEditado.categoria,
+              precio: productoEditado.precio,
+              imagen: productoEditado.imagen,
+              descripcion: productoEditado.descripcion
+            }
+          : producto
+      )
+
+      setCarrito(carritoActualizado)
+    } catch (error) {
+      alert(error.message)
+    }
+  }
+
+  const eliminarProducto = async (idProducto) => {
     const confirmar = window.confirm(
       '¿Seguro que deseas eliminar este producto? Esta acción no se puede deshacer.'
     )
 
     if (!confirmar) return
 
-    const productosActualizados = productos.filter(
-      (producto) => producto.id !== idProducto
-    )
+    try {
+      await eliminarProductoPorId(idProducto)
 
-    const carritoActualizado = carrito.filter(
-      (producto) => producto.id !== idProducto
-    )
+      const productosActualizados = await obtenerProductos()
+      setProductos(productosActualizados)
 
-    setProductos(productosActualizados)
-    setCarrito(carritoActualizado)
-    setMensajePedido('')
+      const carritoActualizado = carrito.filter(
+        (producto) => producto.id !== idProducto
+      )
+
+      setCarrito(carritoActualizado)
+      setMensajePedido('')
+    } catch (error) {
+      alert(error.message)
+    }
   }
 
   const manejarCambioFormulario = (e) => {
