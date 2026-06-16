@@ -286,6 +286,28 @@ function App() {
     setProductos([...productos, productoConId])
   }
 
+  const editarProducto = (productoEditado) => {
+    const productosActualizados = productos.map((producto) =>
+      producto.id === productoEditado.id ? productoEditado : producto
+    )
+
+    const carritoActualizado = carrito.map((producto) =>
+      producto.id === productoEditado.id
+        ? {
+            ...producto,
+            nombre: productoEditado.nombre,
+            categoria: productoEditado.categoria,
+            precio: productoEditado.precio,
+            imagen: productoEditado.imagen,
+            descripcion: productoEditado.descripcion
+          }
+        : producto
+    )
+
+    setProductos(productosActualizados)
+    setCarrito(carritoActualizado)
+  }
+
   const eliminarProducto = (idProducto) => {
     const confirmar = window.confirm(
       '¿Seguro que deseas eliminar este producto? Esta acción no se puede deshacer.'
@@ -449,6 +471,7 @@ function App() {
                 productos={productos}
                 actualizarStock={actualizarStock}
                 agregarProducto={agregarProducto}
+                editarProducto={editarProducto}
                 eliminarProducto={eliminarProducto}
                 pedidos={pedidos}
                 actualizarEstadoPedido={actualizarEstadoPedido}

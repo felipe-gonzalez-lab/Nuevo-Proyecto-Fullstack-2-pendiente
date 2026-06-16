@@ -5,6 +5,7 @@ function PanelAdministrador({
   productos,
   actualizarStock,
   agregarProducto,
+  editarProducto,
   eliminarProducto,
   pedidos,
   actualizarEstadoPedido
@@ -17,6 +18,8 @@ function PanelAdministrador({
     imagen: '',
     descripcion: ''
   })
+
+  const [productoEditandoId, setProductoEditandoId] = useState(null)
 
   const manejarCambioFormulario = (e) => {
     const { name, value } = e.target
@@ -52,7 +55,7 @@ function PanelAdministrador({
     }
 
     if (precio < 10000) {
-      alert('El precio debe ser mayor a $10.000')
+      alert('El precio mínimo permitido es de $10.000.')
       return false
     }
 
@@ -89,24 +92,7 @@ function PanelAdministrador({
     return true
   }
 
-  const manejarAgregarProducto = (e) => {
-    e.preventDefault()
-
-    if (!validarNuevoProducto()) {
-      return
-    }
-
-    const productoParaAgregar = {
-      nombre: nuevoProducto.nombre.trim(),
-      categoria: nuevoProducto.categoria.trim(),
-      precio: Number(nuevoProducto.precio),
-      stock: nuevoProducto.stock === '' ? 0 : Number(nuevoProducto.stock),
-      imagen: nuevoProducto.imagen.trim(),
-      descripcion: nuevoProducto.descripcion.trim()
-    }
-
-    agregarProducto(productoParaAgregar)
-
+  const limpiarFormularioProducto = () => {
     setNuevoProducto({
       nombre: '',
       categoria: '',
@@ -116,7 +102,56 @@ function PanelAdministrador({
       descripcion: ''
     })
 
-    alert('Producto agregado correctamente.')
+    setProductoEditandoId(null)
+  }
+
+  const manejarAgregarProducto = (e) => {
+    e.preventDefault()
+
+    if (!validarNuevoProducto()) {
+      return
+    }
+
+    const productoParaGuardar = {
+      nombre: nuevoProducto.nombre.trim(),
+      categoria: nuevoProducto.categoria.trim(),
+      precio: Number(nuevoProducto.precio),
+      stock: nuevoProducto.stock === '' ? 0 : Number(nuevoProducto.stock),
+      imagen: nuevoProducto.imagen.trim(),
+      descripcion: nuevoProducto.descripcion.trim()
+    }
+
+    if (productoEditandoId) {
+      editarProducto({
+        ...productoParaGuardar,
+        id: productoEditandoId
+      })
+
+      alert('Producto actualizado correctamente.')
+    } else {
+      agregarProducto(productoParaGuardar)
+      alert('Producto agregado correctamente.')
+    }
+
+    limpiarFormularioProducto()
+  }
+
+  const cargarProductoParaEditar = (producto) => {
+    setProductoEditandoId(producto.id)
+
+    setNuevoProducto({
+      nombre: producto.nombre,
+      categoria: producto.categoria,
+      precio: String(producto.precio),
+      stock: String(producto.stock),
+      imagen: producto.imagen,
+      descripcion: producto.descripcion
+    })
+
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
   }
 
   const manejarCambioStock = (idProducto, valorIngresado) => {
@@ -218,7 +253,16 @@ function PanelAdministrador({
 
           <hr className="my-4" />
 
-          <h4 className="fw-bold mb-3">Agregar nuevo producto</h4>
+          <h4 className="fw-bold mb-3">
+            {productoEditandoId ? 'Editar producto' : 'Agregar nuevo producto'}
+          </h4>
+
+          {productoEditandoId && (
+            <div className="alert alert-warning">
+              Estás editando un producto existente. Guarda los cambios o cancela
+              la edición.
+            </div>
+          )}
 
           <form onSubmit={manejarAgregarProducto} className="mb-5">
             <div className="row g-3">
@@ -261,6 +305,9 @@ function PanelAdministrador({
                   onChange={manejarCambioFormulario}
                   placeholder="Ej: 29990"
                 />
+                <small className="text-muted">
+                  Precio mínimo: $10.000.
+                </small>
               </div>
 
               <div className="col-md-6">
@@ -306,10 +353,20 @@ function PanelAdministrador({
                 ></textarea>
               </div>
 
-              <div className="col-md-12">
+              <div className="col-md-12 d-flex gap-2">
                 <button type="submit" className="btn btn-primary">
-                  Agregar producto
+                  {productoEditandoId ? 'Guardar cambios' : 'Agregar producto'}
                 </button>
+
+                {productoEditandoId && (
+                  <button
+                    type="button"
+                    className="btn btn-outline-secondary"
+                    onClick={limpiarFormularioProducto}
+                  >
+                    Cancelar edición
+                  </button>
+                )}
               </div>
             </div>
           </form>
@@ -362,13 +419,23 @@ function PanelAdministrador({
                       </small>
                     </td>
                     <td>
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger btn-sm"
-                        onClick={() => eliminarProducto(producto.id)}
-                      >
-                        Eliminar
-                      </button>
+                      <div className="d-flex gap-2">
+                        <button
+                          type="button"
+                          className="btn btn-outline-primary btn-sm"
+                          onClick={() => cargarProductoParaEditar(producto)}
+                        >
+                          Editar
+                        </button>
+
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger btn-sm"
+                          onClick={() => eliminarProducto(producto.id)}
+                        >
+                          Eliminar
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}

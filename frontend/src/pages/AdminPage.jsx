@@ -5,6 +5,7 @@ function AdminPage({
   productos,
   actualizarStock,
   agregarProducto,
+  editarProducto,
   eliminarProducto,
   pedidos,
   actualizarEstadoPedido,
@@ -29,6 +30,7 @@ function AdminPage({
         productos={productos}
         actualizarStock={actualizarStock}
         agregarProducto={agregarProducto}
+        editarProducto={editarProducto}
         eliminarProducto={eliminarProducto}
         pedidos={pedidos}
         actualizarEstadoPedido={actualizarEstadoPedido}
