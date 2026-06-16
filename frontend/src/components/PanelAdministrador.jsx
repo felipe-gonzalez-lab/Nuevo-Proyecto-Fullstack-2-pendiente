@@ -197,6 +197,30 @@ function PanelAdministrador({
     }
   }
 
+  const obtenerClaseEstado = (estado) => {
+    if (estado === 'Pendiente') {
+      return 'badge bg-warning text-dark'
+    }
+
+    if (estado === 'En preparación') {
+      return 'badge bg-primary'
+    }
+
+    if (estado === 'Enviado') {
+      return 'badge bg-info text-dark'
+    }
+
+    if (estado === 'Entregado') {
+      return 'badge bg-success'
+    }
+
+    if (estado === 'Cancelado') {
+      return 'badge bg-danger'
+    }
+
+    return 'badge bg-secondary'
+  }
+
   return (
     <section className="container my-5">
       <div className="card shadow-sm border-0">
@@ -482,19 +506,25 @@ function PanelAdministrador({
                       </td>
                       <td>${pedido.total.toLocaleString('es-CL')}</td>
                       <td>
-                        <select
-                          className="form-select"
-                          value={pedido.estado}
-                          onChange={(e) =>
-                            actualizarEstadoPedido(pedido.id, e.target.value)
-                          }
-                        >
-                          <option value="Pendiente">Pendiente</option>
-                          <option value="En preparación">En preparación</option>
-                          <option value="Enviado">Enviado</option>
-                          <option value="Entregado">Entregado</option>
-                          <option value="Cancelado">Cancelado</option>
-                        </select>
+                        <div className="d-flex flex-column gap-2">
+                          <span className={obtenerClaseEstado(pedido.estado)}>
+                            {pedido.estado}
+                          </span>
+
+                          <select
+                            className="form-select"
+                            value={pedido.estado}
+                            onChange={(e) =>
+                              actualizarEstadoPedido(pedido.id, e.target.value)
+                            }
+                          >
+                            <option value="Pendiente">Pendiente</option>
+                            <option value="En preparación">En preparación</option>
+                            <option value="Enviado">Enviado</option>
+                            <option value="Entregado">Entregado</option>
+                            <option value="Cancelado">Cancelado</option>
+                          </select>
+                        </div>
                       </td>
                     </tr>
                   ))}
