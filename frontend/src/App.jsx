@@ -11,12 +11,19 @@ import Footer from './components/Footer'
 import DetalleProducto from './pages/DetalleProducto'
 import AdminPage from './pages/AdminPage'
 import LoginPage from './pages/LoginPage'
+
 import {
   obtenerProductos,
   crearProducto,
   actualizarProducto,
   eliminarProductoPorId
 } from './services/productosService'
+
+import {
+  obtenerPedidos,
+  crearPedidoBackend,
+  actualizarEstadoPedidoBackend
+} from './services/pedidosService'
 
 function App() {
   const [busqueda, setBusqueda] = useState('')
@@ -26,10 +33,7 @@ function App() {
 
   const [productos, setProductos] = useState([])
 
-  const [pedidos, setPedidos] = useState(() => {
-    const pedidosGuardados = localStorage.getItem('pedidos')
-    return pedidosGuardados ? JSON.parse(pedidosGuardados) : []
-  })
+  const [pedidos, setPedidos] = useState([])
 
   const [usuarioLogueado, setUsuarioLogueado] = useState(() => {
     const usuarioGuardado = localStorage.getItem('usuarioLogueado')
@@ -76,8 +80,17 @@ function App() {
   }, [])
 
   useEffect(() => {
-    localStorage.setItem('pedidos', JSON.stringify(pedidos))
-  }, [pedidos])
+    const cargarPedidos = async () => {
+      try {
+        const pedidosBackend = await obtenerPedidos()
+        setPedidos(pedidosBackend)
+      } catch (error) {
+        console.error(error)
+      }
+    }
+
+    cargarPedidos()
+  }, [])
 
   useEffect(() => {
     if (usuarioLogueado) {
@@ -237,7 +250,7 @@ function App() {
     setMensajePedido('')
   }
 
-  const crearPedido = () => {
+  const crearPedido = async () => {
     if (!usuarioLogueado) {
       setMensajePedido('Debes iniciar sesión para crear un pedido.')
       return
@@ -254,30 +267,36 @@ function App() {
     }
 
     const nuevoPedido = {
-      id: Date.now(),
       cliente: usuarioLogueado.nombre,
       correoCliente: usuarioLogueado.correo,
       direccion: direccionPedido.trim(),
       productos: carrito,
-      total: totalCarrito,
-      estado: 'Pendiente',
-      fecha: new Date().toLocaleDateString('es-CL')
+      total: totalCarrito
     }
 
-    setPedidos([...pedidos, nuevoPedido])
-    setMensajePedido('Pedido creado correctamente. Estado inicial: Pendiente.')
-    setCarrito([])
-    setDireccionPedido('')
+    try {
+      await crearPedidoBackend(nuevoPedido)
+
+      const pedidosActualizados = await obtenerPedidos()
+      setPedidos(pedidosActualizados)
+
+      setMensajePedido('Pedido creado correctamente. Estado inicial: Pendiente.')
+      setCarrito([])
+      setDireccionPedido('')
+    } catch (error) {
+      alert(error.message)
+    }
   }
 
-  const actualizarEstadoPedido = (idPedido, nuevoEstado) => {
-    const pedidosActualizados = pedidos.map((pedido) =>
-      pedido.id === idPedido
-        ? { ...pedido, estado: nuevoEstado }
-        : pedido
-    )
+  const actualizarEstadoPedido = async (idPedido, nuevoEstado) => {
+    try {
+      await actualizarEstadoPedidoBackend(idPedido, nuevoEstado)
 
-    setPedidos(pedidosActualizados)
+      const pedidosActualizados = await obtenerPedidos()
+      setPedidos(pedidosActualizados)
+    } catch (error) {
+      alert(error.message)
+    }
   }
 
   const actualizarStock = async (idProducto, nuevoStock) => {
@@ -435,7 +454,6 @@ function App() {
     setMensajePedido('')
 
     localStorage.removeItem('productos')
-    localStorage.removeItem('pedidos')
   }
 
   return (

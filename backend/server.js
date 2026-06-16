@@ -46,6 +46,8 @@ let productos = [
   }
 ]
 
+let pedidos = []
+
 const validarProducto = (producto) => {
   const precio = Number(producto.precio)
   const stock = producto.stock === '' || producto.stock === null
@@ -99,11 +101,37 @@ const validarProducto = (producto) => {
   return null
 }
 
+const validarPedido = (pedido) => {
+  if (!pedido.cliente || pedido.cliente.trim() === '') {
+    return 'El nombre del cliente es obligatorio.'
+  }
+
+  if (!pedido.correoCliente || pedido.correoCliente.trim() === '') {
+    return 'El correo del cliente es obligatorio.'
+  }
+
+  if (!pedido.direccion || pedido.direccion.trim().length < 5) {
+    return 'La dirección de entrega es obligatoria.'
+  }
+
+  if (!Array.isArray(pedido.productos) || pedido.productos.length === 0) {
+    return 'El pedido debe tener al menos un producto.'
+  }
+
+  if (pedido.total === undefined || Number(pedido.total) <= 0) {
+    return 'El total del pedido debe ser mayor a 0.'
+  }
+
+  return null
+}
+
 app.get('/', (req, res) => {
   res.json({
     mensaje: 'API TecnoStore funcionando correctamente'
   })
 })
+
+// Rutas de productos
 
 app.get('/api/productos', (req, res) => {
   res.json(productos)
@@ -205,6 +233,80 @@ app.delete('/api/productos/:id', (req, res) => {
 
   res.json({
     mensaje: 'Producto eliminado correctamente.'
+  })
+})
+
+// Rutas de pedidos
+
+app.get('/api/pedidos', (req, res) => {
+  res.json(pedidos)
+})
+
+app.post('/api/pedidos', (req, res) => {
+  const errorValidacion = validarPedido(req.body)
+
+  if (errorValidacion) {
+    return res.status(400).json({
+      mensaje: errorValidacion
+    })
+  }
+
+  const nuevoPedido = {
+    id: Date.now(),
+    cliente: req.body.cliente.trim(),
+    correoCliente: req.body.correoCliente.trim(),
+    direccion: req.body.direccion.trim(),
+    productos: req.body.productos,
+    total: Number(req.body.total),
+    estado: 'Pendiente',
+    fecha: new Date().toLocaleDateString('es-CL')
+  }
+
+  pedidos.push(nuevoPedido)
+
+  res.status(201).json({
+    mensaje: 'Pedido creado correctamente.',
+    pedido: nuevoPedido
+  })
+})
+
+app.put('/api/pedidos/:id/estado', (req, res) => {
+  const id = Number(req.params.id)
+  const { estado } = req.body
+
+  const estadosPermitidos = [
+    'Pendiente',
+    'En preparación',
+    'Enviado',
+    'Entregado',
+    'Cancelado'
+  ]
+
+  if (!estadosPermitidos.includes(estado)) {
+    return res.status(400).json({
+      mensaje: 'Estado de pedido no válido.'
+    })
+  }
+
+  const pedidoExiste = pedidos.find((pedido) => pedido.id === id)
+
+  if (!pedidoExiste) {
+    return res.status(404).json({
+      mensaje: 'Pedido no encontrado.'
+    })
+  }
+
+  pedidos = pedidos.map((pedido) =>
+    pedido.id === id
+      ? { ...pedido, estado }
+      : pedido
+  )
+
+  const pedidoActualizado = pedidos.find((pedido) => pedido.id === id)
+
+  res.json({
+    mensaje: 'Estado del pedido actualizado correctamente.',
+    pedido: pedidoActualizado
   })
 })
 
