@@ -1,0 +1,33 @@
+[
+  {
+    "id": 1781599373327,
+    "cliente": "Cliente",
+    "correoCliente": "cliente@tecnostore.cl",
+    "direccion": "santiago",
+    "productos": [
+      {
+        "id": 1781599202671,
+        "nombre": "PC",
+        "categoria": "Notebooks",
+        "precio": 150515,
+        "stock": 7,
+        "imagen": "https://plus.unsplash.com/premium_photo-1687892170417-f9a11a402ef7?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        "descripcion": "PC",
+        "cantidad": 1
+      },
+      {
+        "id": 4,
+        "nombre": "Teclado inalámbrico RGB",
+        "categoria": "Accesorios",
+        "precio": 59990,
+        "stock": 12,
+        "imagen": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=900&q=80",
+        "descripcion": "Teclado mecánico con iluminación RGB para escribir y jugar.",
+        "cantidad": 1
+      }
+    ],
+    "total": 210505,
+    "estado": "Pendiente",
+    "fecha": "16-06-2026"
+  }
+]

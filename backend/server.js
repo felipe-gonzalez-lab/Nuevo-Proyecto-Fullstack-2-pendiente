@@ -1,5 +1,6 @@
 import express from 'express'
 import cors from 'cors'
+import { mkdir, readFile, writeFile } from 'fs/promises'
 
 const app = express()
 const PORT = 3001
@@ -7,7 +8,11 @@ const PORT = 3001
 app.use(cors())
 app.use(express.json())
 
-let productos = [
+const DATA_DIR = './data'
+const PRODUCTOS_FILE = './data/productos.json'
+const PEDIDOS_FILE = './data/pedidos.json'
+
+const productosIniciales = [
   {
     id: 1,
     nombre: 'Notebook Lenovo IdeaPad 15',
@@ -28,7 +33,7 @@ let productos = [
   },
   {
     id: 3,
-    nombre: 'Monitor Samsung 24 pulgadas',
+    nombre: 'Monitor Mac 24 pulgadas',
     categoria: 'Monitores',
     precio: 129990,
     stock: 10,
@@ -37,7 +42,7 @@ let productos = [
   },
   {
     id: 4,
-    nombre: 'Teclado mecánico RGB',
+    nombre: 'Teclado inalámbrico RGB',
     categoria: 'Accesorios',
     precio: 59990,
     stock: 12,
@@ -46,7 +51,29 @@ let productos = [
   }
 ]
 
+let productos = []
 let pedidos = []
+
+const leerArchivoJSON = async (ruta, datosIniciales) => {
+  try {
+    const contenido = await readFile(ruta, 'utf-8')
+    return JSON.parse(contenido)
+  } catch (error) {
+    await writeFile(ruta, JSON.stringify(datosIniciales, null, 2))
+    return datosIniciales
+  }
+}
+
+const guardarArchivoJSON = async (ruta, datos) => {
+  await writeFile(ruta, JSON.stringify(datos, null, 2))
+}
+
+const inicializarDatos = async () => {
+  await mkdir(DATA_DIR, { recursive: true })
+
+  productos = await leerArchivoJSON(PRODUCTOS_FILE, productosIniciales)
+  pedidos = await leerArchivoJSON(PEDIDOS_FILE, [])
+}
 
 const validarProducto = (producto) => {
   const precio = Number(producto.precio)
@@ -150,7 +177,7 @@ app.get('/api/productos/:id', (req, res) => {
   res.json(producto)
 })
 
-app.post('/api/productos', (req, res) => {
+app.post('/api/productos', async (req, res) => {
   const errorValidacion = validarProducto(req.body)
 
   if (errorValidacion) {
@@ -172,6 +199,7 @@ app.post('/api/productos', (req, res) => {
   }
 
   productos.push(nuevoProducto)
+  await guardarArchivoJSON(PRODUCTOS_FILE, productos)
 
   res.status(201).json({
     mensaje: 'Producto creado correctamente.',
@@ -179,7 +207,7 @@ app.post('/api/productos', (req, res) => {
   })
 })
 
-app.put('/api/productos/:id', (req, res) => {
+app.put('/api/productos/:id', async (req, res) => {
   const id = Number(req.params.id)
   const productoExiste = productos.find((item) => item.id === id)
 
@@ -213,13 +241,15 @@ app.put('/api/productos/:id', (req, res) => {
     producto.id === id ? productoActualizado : producto
   )
 
+  await guardarArchivoJSON(PRODUCTOS_FILE, productos)
+
   res.json({
     mensaje: 'Producto actualizado correctamente.',
     producto: productoActualizado
   })
 })
 
-app.delete('/api/productos/:id', (req, res) => {
+app.delete('/api/productos/:id', async (req, res) => {
   const id = Number(req.params.id)
   const productoExiste = productos.find((item) => item.id === id)
 
@@ -230,6 +260,7 @@ app.delete('/api/productos/:id', (req, res) => {
   }
 
   productos = productos.filter((producto) => producto.id !== id)
+  await guardarArchivoJSON(PRODUCTOS_FILE, productos)
 
   res.json({
     mensaje: 'Producto eliminado correctamente.'
@@ -242,7 +273,7 @@ app.get('/api/pedidos', (req, res) => {
   res.json(pedidos)
 })
 
-app.post('/api/pedidos', (req, res) => {
+app.post('/api/pedidos', async (req, res) => {
   const errorValidacion = validarPedido(req.body)
 
   if (errorValidacion) {
@@ -263,6 +294,7 @@ app.post('/api/pedidos', (req, res) => {
   }
 
   pedidos.push(nuevoPedido)
+  await guardarArchivoJSON(PEDIDOS_FILE, pedidos)
 
   res.status(201).json({
     mensaje: 'Pedido creado correctamente.',
@@ -270,7 +302,7 @@ app.post('/api/pedidos', (req, res) => {
   })
 })
 
-app.put('/api/pedidos/:id/estado', (req, res) => {
+app.put('/api/pedidos/:id/estado', async (req, res) => {
   const id = Number(req.params.id)
   const { estado } = req.body
 
@@ -302,6 +334,8 @@ app.put('/api/pedidos/:id/estado', (req, res) => {
       : pedido
   )
 
+  await guardarArchivoJSON(PEDIDOS_FILE, pedidos)
+
   const pedidoActualizado = pedidos.find((pedido) => pedido.id === id)
 
   res.json({
@@ -310,6 +344,12 @@ app.put('/api/pedidos/:id/estado', (req, res) => {
   })
 })
 
-app.listen(PORT, () => {
-  console.log(`Servidor backend ejecutándose en http://localhost:${PORT}`)
-})
+inicializarDatos()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`Servidor backend ejecutándose en http://localhost:${PORT}`)
+    })
+  })
+  .catch((error) => {
+    console.error('Error al inicializar los datos:', error)
+  })

@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "nombre": "Notebook Lenovo IdeaPad 15",
+    "categoria": "Notebooks",
+    "precio": 549990,
+    "stock": 8,
+    "imagen": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80",
+    "descripcion": "Notebook ideal para estudio, trabajo y navegación diaria."
+  },
+  {
+    "id": 2,
+    "nombre": "Notebook Asus VivoBook",
+    "categoria": "Notebooks",
+    "precio": 629990,
+    "stock": 5,
+    "imagen": "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=900&q=80",
+    "descripcion": "Equipo liviano, rápido y práctico para tareas diarias."
+  },
+  {
+    "id": 3,
+    "nombre": "Monitor Mac 24 pulgadas",
+    "categoria": "Monitores",
+    "precio": 129990,
+    "stock": 10,
+    "imagen": "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=900&q=80",
+    "descripcion": "Monitor Full HD ideal para oficina, estudio y entretenimiento."
+  },
+  {
+    "id": 4,
+    "nombre": "Teclado inalámbrico RGB",
+    "categoria": "Accesorios",
+    "precio": 59990,
+    "stock": 12,
+    "imagen": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=900&q=80",
+    "descripcion": "Teclado mecánico con iluminación RGB para escribir y jugar."
+  },
+  {
+    "id": 1781599202671,
+    "nombre": "PC",
+    "categoria": "Notebooks",
+    "precio": 150515,
+    "stock": 7,
+    "imagen": "https://plus.unsplash.com/premium_photo-1687892170417-f9a11a402ef7?q=80&w=1171&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+    "descripcion": "PC"
+  }
+]

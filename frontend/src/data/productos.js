@@ -28,7 +28,7 @@ export const productosIniciales = [
   },
   {
     id: 4,
-    nombre: 'Teclado Mecánico RGB',
+    nombre: 'Teclado Inalámbrico',
     categoria: 'Accesorios',
     precio: 39990,
     stock: 12,
@@ -46,7 +46,7 @@ export const productosIniciales = [
   },
   {
     id: 6,
-    nombre: 'Monitor Samsung 24 pulgadas',
+    nombre: 'Monitor Mac 24 pulgadas',
     categoria: 'Monitores',
     precio: 129990,
     stock: 7,
