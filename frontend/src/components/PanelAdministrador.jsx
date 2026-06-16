@@ -119,6 +119,8 @@ function PanelAdministrador({
                   <tr>
                     <th>ID Pedido</th>
                     <th>Fecha</th>
+                    <th>Cliente</th>
+                    <th>Correo</th>
                     <th>Productos</th>
                     <th>Total</th>
                     <th>Estado</th>
@@ -130,6 +132,8 @@ function PanelAdministrador({
                     <tr key={pedido.id}>
                       <td>{pedido.id}</td>
                       <td>{pedido.fecha}</td>
+                      <td>{pedido.cliente}</td>
+                      <td>{pedido.correoCliente}</td>
                       <td>
                         <ul className="mb-0">
                           {pedido.productos.map((producto) => (
