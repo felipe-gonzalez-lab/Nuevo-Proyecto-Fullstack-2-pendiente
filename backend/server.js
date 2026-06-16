@@ -3,7 +3,7 @@ import cors from 'cors'
 import { mkdir, readFile, writeFile } from 'fs/promises'
 
 const app = express()
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 
 app.use(cors())
 app.use(express.json())
@@ -42,7 +42,7 @@ const productosIniciales = [
   },
   {
     id: 4,
-    nombre: 'Teclado inalámbrico RGB',
+    nombre: 'Teclado inalámbrico',
     categoria: 'Accesorios',
     precio: 59990,
     stock: 12,
