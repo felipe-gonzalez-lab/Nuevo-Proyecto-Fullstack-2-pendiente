@@ -1,6 +1,13 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 
-function Navbar({ usuarioActual }) {
+function Navbar({ usuarioActual, usuarioLogueado, cerrarSesion }) {
+  const navigate = useNavigate()
+
+  const manejarCerrarSesion = () => {
+    cerrarSesion()
+    navigate('/')
+  }
+
   return (
     <header>
       <nav className="navbar navbar-expand-lg navbar-dark bg-dark fixed-top">
@@ -57,6 +64,31 @@ function Navbar({ usuarioActual }) {
                     Panel administrador
                   </Link>
                 </li>
+              )}
+
+              {!usuarioLogueado ? (
+                <li className="nav-item">
+                  <Link className="nav-link" to="/login">
+                    Iniciar sesión
+                  </Link>
+                </li>
+              ) : (
+                <>
+                  <li className="nav-item">
+                    <span className="nav-link">
+                      {usuarioLogueado.nombre}
+                    </span>
+                  </li>
+
+                  <li className="nav-item">
+                    <button
+                      className="btn btn-outline-light btn-sm ms-lg-2"
+                      onClick={manejarCerrarSesion}
+                    >
+                      Cerrar sesión
+                    </button>
+                  </li>
+                </>
               )}
             </ul>
           </div>

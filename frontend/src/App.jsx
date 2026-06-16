@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
 import { productosIniciales } from './data/productos'
 import Navbar from './components/Navbar'
@@ -9,16 +9,16 @@ import Carrito from './components/Carrito'
 import FormularioContacto from './components/FormularioContacto'
 import Footer from './components/Footer'
 import DetalleProducto from './pages/DetalleProducto'
-import SelectorUsuario from './components/SelectorUsuario'
 import AdminPage from './pages/AdminPage'
+import LoginPage from './pages/LoginPage'
 
 function App() {
   const [busqueda, setBusqueda] = useState('')
   const [categoria, setCategoria] = useState('Todas')
   const [carrito, setCarrito] = useState([])
-  const [usuarioActual, setUsuarioActual] = useState('cliente')
   const [productos, setProductos] = useState(productosIniciales)
   const [pedidos, setPedidos] = useState([])
+  const [usuarioLogueado, setUsuarioLogueado] = useState(null)
 
   const [formulario, setFormulario] = useState({
     nombre: '',
@@ -29,6 +29,40 @@ function App() {
   const [errores, setErrores] = useState({})
   const [mensajeEnviado, setMensajeEnviado] = useState('')
   const [mensajePedido, setMensajePedido] = useState('')
+
+  const usuarios = [
+    {
+      correo: 'cliente@tecnostore.cl',
+      clave: '1234',
+      nombre: 'Cliente',
+      rol: 'cliente'
+    },
+    {
+      correo: 'admin@tecnostore.cl',
+      clave: 'admin123',
+      nombre: 'Administrador',
+      rol: 'admin'
+    }
+  ]
+
+  const iniciarSesion = (correo, clave) => {
+    const usuarioEncontrado = usuarios.find(
+      (usuario) => usuario.correo === correo && usuario.clave === clave
+    )
+
+    if (!usuarioEncontrado) {
+      return null
+    }
+
+    setUsuarioLogueado(usuarioEncontrado)
+    return usuarioEncontrado
+  }
+
+  const cerrarSesion = () => {
+    setUsuarioLogueado(null)
+  }
+
+  const usuarioActual = usuarioLogueado ? usuarioLogueado.rol : 'cliente'
 
   const productosFiltrados = productos.filter((producto) => {
     const coincideNombre = producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
@@ -249,11 +283,10 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Navbar usuarioActual={usuarioActual} />
-
-      <SelectorUsuario
+      <Navbar
         usuarioActual={usuarioActual}
-        setUsuarioActual={setUsuarioActual}
+        usuarioLogueado={usuarioLogueado}
+        cerrarSesion={cerrarSesion}
       />
 
       <Routes>
@@ -295,6 +328,17 @@ function App() {
         />
 
         <Route
+          path="/login"
+          element={
+            usuarioLogueado ? (
+              <Navigate to="/" />
+            ) : (
+              <LoginPage iniciarSesion={iniciarSesion} />
+            )
+          }
+        />
+
+        <Route
           path="/producto/:id"
           element={
             <DetalleProducto
@@ -307,12 +351,16 @@ function App() {
         <Route
           path="/admin"
           element={
-            <AdminPage
-              productos={productos}
-              actualizarStock={actualizarStock}
-              pedidos={pedidos}
-              actualizarEstadoPedido={actualizarEstadoPedido}
-            />
+            usuarioLogueado && usuarioLogueado.rol === 'admin' ? (
+              <AdminPage
+                productos={productos}
+                actualizarStock={actualizarStock}
+                pedidos={pedidos}
+                actualizarEstadoPedido={actualizarEstadoPedido}
+              />
+            ) : (
+              <Navigate to="/login" />
+            )
           }
         />
       </Routes>
