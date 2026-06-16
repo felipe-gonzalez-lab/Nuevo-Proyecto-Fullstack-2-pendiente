@@ -1,14 +1,5 @@
 [
   {
-    "id": 1,
-    "nombre": "Notebook Lenovo IdeaPad 15",
-    "categoria": "Notebooks",
-    "precio": 549990,
-    "stock": 8,
-    "imagen": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=900&q=80",
-    "descripcion": "Notebook ideal para estudio, trabajo y navegación diaria."
-  },
-  {
     "id": 2,
     "nombre": "Notebook Asus VivoBook",
     "categoria": "Notebooks",
@@ -31,7 +22,7 @@
     "nombre": "Teclado inalámbrico RGB",
     "categoria": "Accesorios",
     "precio": 59990,
-    "stock": 12,
+    "stock": 50,
     "imagen": "https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=900&q=80",
     "descripcion": "Teclado mecánico con iluminación RGB para escribir y jugar."
   },

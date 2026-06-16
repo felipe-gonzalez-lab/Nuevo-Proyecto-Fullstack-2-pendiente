@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3001/api/productos'
+const API_URL = `${import.meta.env.VITE_API_URL}/api/productos`
 
 export const obtenerProductos = async () => {
   const respuesta = await fetch(API_URL)
