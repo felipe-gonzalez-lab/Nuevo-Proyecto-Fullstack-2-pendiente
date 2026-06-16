@@ -6,6 +6,43 @@ function PanelAdministrador({
   pedidos,
   actualizarEstadoPedido
 }) {
+  const manejarCambioStock = (idProducto, valorIngresado) => {
+    if (valorIngresado === '') {
+      actualizarStock(idProducto, 0)
+      return
+    }
+
+    const nuevoStock = Number(valorIngresado)
+
+    if (Number.isNaN(nuevoStock)) {
+      alert('El stock debe ser un número válido.')
+      return
+    }
+
+    if (nuevoStock < 0) {
+      alert('El stock no puede ser negativo.')
+      return
+    }
+
+    if (nuevoStock > 50) {
+      alert('El stock máximo permitido es de 50 unidades.')
+      return
+    }
+
+    if (!Number.isInteger(nuevoStock)) {
+      alert('El stock debe ser un número entero, sin decimales.')
+      return
+    }
+
+    actualizarStock(idProducto, nuevoStock)
+  }
+
+  const bloquearCaracteresInvalidos = (e) => {
+    if (e.key === '-' || e.key === '+' || e.key === '.' || e.key === ',') {
+      e.preventDefault()
+    }
+  }
+
   return (
     <section className="container my-5">
       <div className="card shadow-sm border-0">
@@ -94,11 +131,17 @@ function PanelAdministrador({
                         type="number"
                         className="form-control"
                         min="0"
+                        max="50"
+                        step="1"
                         value={producto.stock}
+                        onKeyDown={bloquearCaracteresInvalidos}
                         onChange={(e) =>
-                          actualizarStock(producto.id, Number(e.target.value))
+                          manejarCambioStock(producto.id, e.target.value)
                         }
                       />
+                      <small className="text-muted">
+                        Mínimo 0, máximo 50 unidades.
+                      </small>
                     </td>
                   </tr>
                 ))}
