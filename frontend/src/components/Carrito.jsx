@@ -97,7 +97,7 @@ function Carrito({
                   className="btn btn-success"
                   onClick={simularPedido}
                 >
-                  Simular pedido
+                  Crear pedido
                 </button>
               </div>
             </div>

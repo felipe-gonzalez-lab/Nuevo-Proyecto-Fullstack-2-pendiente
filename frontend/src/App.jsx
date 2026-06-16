@@ -189,6 +189,11 @@ function App() {
   }
 
   const simularPedido = () => {
+    if (!usuarioLogueado) {
+      setMensajePedido('Debes iniciar sesión para crear un pedido.')
+      return
+    }
+
     if (carrito.length === 0) {
       setMensajePedido('No puedes crear un pedido con el carrito vacío.')
       return
@@ -196,6 +201,8 @@ function App() {
 
     const nuevoPedido = {
       id: Date.now(),
+      cliente: usuarioLogueado.nombre,
+      correoCliente: usuarioLogueado.correo,
       productos: carrito,
       total: totalCarrito,
       estado: 'Pendiente',
