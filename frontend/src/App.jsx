@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import './App.css'
 import { productosIniciales } from './data/productos'
 import Navbar from './components/Navbar'
@@ -249,20 +249,12 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Navbar />
+      <Navbar usuarioActual={usuarioActual} />
 
       <SelectorUsuario
         usuarioActual={usuarioActual}
         setUsuarioActual={setUsuarioActual}
       />
-
-      {usuarioActual === 'admin' && (
-        <div className="container my-3 text-end">
-          <Link to="/admin" className="btn btn-dark">
-            Ir al panel administrador
-          </Link>
-        </div>
-      )}
 
       <Routes>
         <Route
