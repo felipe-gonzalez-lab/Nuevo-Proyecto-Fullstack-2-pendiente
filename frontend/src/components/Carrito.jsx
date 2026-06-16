@@ -5,8 +5,10 @@ function Carrito({
   disminuirCantidad,
   eliminarDelCarrito,
   vaciarCarrito,
-  simularPedido,
-  mensajePedido
+  crearPedido,
+  mensajePedido,
+  direccionPedido,
+  setDireccionPedido
 }) {
   return (
     <section id="carrito" className="bg-light py-5">
@@ -80,25 +82,45 @@ function Carrito({
               </tbody>
             </table>
 
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-              <button
-                className="btn btn-outline-danger"
-                onClick={vaciarCarrito}
-              >
-                Vaciar carrito
-              </button>
+            <div className="row align-items-end g-3">
+              <div className="col-md-7">
+                <label className="form-label fw-semibold">
+                  Dirección de entrega
+                </label>
 
-              <div className="text-md-end">
+                <input
+                  type="text"
+                  className="form-control"
+                  value={direccionPedido}
+                  onChange={(e) => setDireccionPedido(e.target.value)}
+                  placeholder="Ej: Av. Providencia 1234, Santiago"
+                />
+
+                <small className="text-muted">
+                  La dirección será registrada junto al pedido.
+                </small>
+              </div>
+
+              <div className="col-md-5 text-md-end">
                 <h3 className="h4">
                   Total: ${totalCarrito.toLocaleString('es-CL')}
                 </h3>
 
-                <button
-                  className="btn btn-success"
-                  onClick={simularPedido}
-                >
-                  Crear pedido
-                </button>
+                <div className="d-flex flex-column flex-md-row justify-content-md-end gap-2">
+                  <button
+                    className="btn btn-outline-danger"
+                    onClick={vaciarCarrito}
+                  >
+                    Vaciar carrito
+                  </button>
+
+                  <button
+                    className="btn btn-success"
+                    onClick={crearPedido}
+                  >
+                    Crear pedido
+                  </button>
+                </div>
               </div>
             </div>
           </div>

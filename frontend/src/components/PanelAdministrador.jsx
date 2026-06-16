@@ -482,6 +482,7 @@ function PanelAdministrador({
                     <th>Fecha</th>
                     <th>Cliente</th>
                     <th>Correo</th>
+                    <th>Dirección</th>
                     <th>Productos</th>
                     <th>Total</th>
                     <th>Estado</th>
@@ -495,6 +496,7 @@ function PanelAdministrador({
                       <td>{pedido.fecha}</td>
                       <td>{pedido.cliente}</td>
                       <td>{pedido.correoCliente}</td>
+                      <td>{pedido.direccion || 'No registrada'}</td>
                       <td>
                         <ul className="mb-0">
                           {pedido.productos.map((producto) => (

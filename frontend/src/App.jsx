@@ -16,6 +16,7 @@ function App() {
   const [busqueda, setBusqueda] = useState('')
   const [categoria, setCategoria] = useState('Todas')
   const [carrito, setCarrito] = useState([])
+  const [direccionPedido, setDireccionPedido] = useState('')
 
   const [productos, setProductos] = useState(() => {
     const productosGuardados = localStorage.getItem('productos')
@@ -223,7 +224,7 @@ function App() {
     setMensajePedido('')
   }
 
-  const simularPedido = () => {
+  const crearPedido = () => {
     if (!usuarioLogueado) {
       setMensajePedido('Debes iniciar sesión para crear un pedido.')
       return
@@ -234,10 +235,16 @@ function App() {
       return
     }
 
+    if (direccionPedido.trim().length < 5) {
+      setMensajePedido('Debes ingresar una dirección de entrega válida.')
+      return
+    }
+
     const nuevoPedido = {
       id: Date.now(),
       cliente: usuarioLogueado.nombre,
       correoCliente: usuarioLogueado.correo,
+      direccion: direccionPedido.trim(),
       productos: carrito,
       total: totalCarrito,
       estado: 'Pendiente',
@@ -247,6 +254,7 @@ function App() {
     setPedidos([...pedidos, nuevoPedido])
     setMensajePedido('Pedido creado correctamente. Estado inicial: Pendiente.')
     setCarrito([])
+    setDireccionPedido('')
   }
 
   const actualizarEstadoPedido = (idPedido, nuevoEstado) => {
@@ -390,6 +398,7 @@ function App() {
     setProductos(productosIniciales)
     setPedidos([])
     setCarrito([])
+    setDireccionPedido('')
     setMensajePedido('')
 
     localStorage.removeItem('productos')
@@ -427,8 +436,10 @@ function App() {
                 disminuirCantidad={disminuirCantidad}
                 eliminarDelCarrito={eliminarDelCarrito}
                 vaciarCarrito={vaciarCarrito}
-                simularPedido={simularPedido}
+                crearPedido={crearPedido}
                 mensajePedido={mensajePedido}
+                direccionPedido={direccionPedido}
+                setDireccionPedido={setDireccionPedido}
               />
 
               <FormularioContacto
