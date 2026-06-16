@@ -93,8 +93,13 @@ function App() {
   const usuarioActual = usuarioLogueado ? usuarioLogueado.rol : 'cliente'
 
   const productosFiltrados = productos.filter((producto) => {
-    const coincideNombre = producto.nombre.toLowerCase().includes(busqueda.toLowerCase())
-    const coincideCategoria = categoria === 'Todas' || producto.categoria === categoria
+    const coincideNombre = producto.nombre
+      .toLowerCase()
+      .includes(busqueda.toLowerCase())
+
+    const coincideCategoria =
+      categoria === 'Todas' || producto.categoria === categoria
+
     return coincideNombre && coincideCategoria
   })
 
@@ -131,7 +136,9 @@ function App() {
   }
 
   const aumentarCantidad = (idProducto) => {
-    const productoActual = productos.find((producto) => producto.id === idProducto)
+    const productoActual = productos.find(
+      (producto) => producto.id === idProducto
+    )
 
     if (!productoActual || productoActual.stock <= 0) {
       setMensajePedido('No hay más stock disponible para este producto.')
@@ -253,15 +260,50 @@ function App() {
   }
 
   const actualizarStock = (idProducto, nuevoStock) => {
-    if (nuevoStock < 0) return
+    const stockValidado =
+      nuevoStock === '' || nuevoStock === null ? 0 : Number(nuevoStock)
+
+    if (Number.isNaN(stockValidado)) return
+    if (stockValidado < 0) return
+    if (stockValidado > 50) return
+    if (!Number.isInteger(stockValidado)) return
 
     const productosActualizados = productos.map((producto) =>
       producto.id === idProducto
-        ? { ...producto, stock: nuevoStock }
+        ? { ...producto, stock: stockValidado }
         : producto
     )
 
     setProductos(productosActualizados)
+  }
+
+  const agregarProducto = (nuevoProducto) => {
+    const productoConId = {
+      ...nuevoProducto,
+      id: Date.now()
+    }
+
+    setProductos([...productos, productoConId])
+  }
+
+  const eliminarProducto = (idProducto) => {
+    const confirmar = window.confirm(
+      '¿Seguro que deseas eliminar este producto? Esta acción no se puede deshacer.'
+    )
+
+    if (!confirmar) return
+
+    const productosActualizados = productos.filter(
+      (producto) => producto.id !== idProducto
+    )
+
+    const carritoActualizado = carrito.filter(
+      (producto) => producto.id !== idProducto
+    )
+
+    setProductos(productosActualizados)
+    setCarrito(carritoActualizado)
+    setMensajePedido('')
   }
 
   const manejarCambioFormulario = (e) => {
@@ -320,14 +362,14 @@ function App() {
     const confirmar = window.confirm(
       '¿Seguro que deseas restablecer los datos de prueba? Se eliminarán los pedidos y se restaurará el stock inicial.'
     )
-  
+
     if (!confirmar) return
-  
+
     setProductos(productosIniciales)
     setPedidos([])
     setCarrito([])
     setMensajePedido('')
-  
+
     localStorage.removeItem('productos')
     localStorage.removeItem('pedidos')
   }
@@ -406,6 +448,8 @@ function App() {
               <AdminPage
                 productos={productos}
                 actualizarStock={actualizarStock}
+                agregarProducto={agregarProducto}
+                eliminarProducto={eliminarProducto}
                 pedidos={pedidos}
                 actualizarEstadoPedido={actualizarEstadoPedido}
                 restablecerDatos={restablecerDatos}

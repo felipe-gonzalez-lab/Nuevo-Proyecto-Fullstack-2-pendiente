@@ -4,6 +4,8 @@ import PanelAdministrador from '../components/PanelAdministrador'
 function AdminPage({
   productos,
   actualizarStock,
+  agregarProducto,
+  eliminarProducto,
   pedidos,
   actualizarEstadoPedido,
   restablecerDatos
@@ -26,6 +28,8 @@ function AdminPage({
       <PanelAdministrador
         productos={productos}
         actualizarStock={actualizarStock}
+        agregarProducto={agregarProducto}
+        eliminarProducto={eliminarProducto}
         pedidos={pedidos}
         actualizarEstadoPedido={actualizarEstadoPedido}
       />
