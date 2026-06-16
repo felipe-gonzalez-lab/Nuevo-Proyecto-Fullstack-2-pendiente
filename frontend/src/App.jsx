@@ -316,6 +316,22 @@ function App() {
     0
   )
 
+  const restablecerDatos = () => {
+    const confirmar = window.confirm(
+      '¿Seguro que deseas restablecer los datos de prueba? Se eliminarán los pedidos y se restaurará el stock inicial.'
+    )
+  
+    if (!confirmar) return
+  
+    setProductos(productosIniciales)
+    setPedidos([])
+    setCarrito([])
+    setMensajePedido('')
+  
+    localStorage.removeItem('productos')
+    localStorage.removeItem('pedidos')
+  }
+
   return (
     <BrowserRouter>
       <Navbar
@@ -392,6 +408,7 @@ function App() {
                 actualizarStock={actualizarStock}
                 pedidos={pedidos}
                 actualizarEstadoPedido={actualizarEstadoPedido}
+                restablecerDatos={restablecerDatos}
               />
             ) : (
               <Navigate to="/login" />
