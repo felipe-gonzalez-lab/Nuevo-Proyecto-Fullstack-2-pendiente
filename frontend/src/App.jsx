@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
 import './App.css'
 import { productosIniciales } from './data/productos'
@@ -16,9 +16,21 @@ function App() {
   const [busqueda, setBusqueda] = useState('')
   const [categoria, setCategoria] = useState('Todas')
   const [carrito, setCarrito] = useState([])
-  const [productos, setProductos] = useState(productosIniciales)
-  const [pedidos, setPedidos] = useState([])
-  const [usuarioLogueado, setUsuarioLogueado] = useState(null)
+
+  const [productos, setProductos] = useState(() => {
+    const productosGuardados = localStorage.getItem('productos')
+    return productosGuardados ? JSON.parse(productosGuardados) : productosIniciales
+  })
+
+  const [pedidos, setPedidos] = useState(() => {
+    const pedidosGuardados = localStorage.getItem('pedidos')
+    return pedidosGuardados ? JSON.parse(pedidosGuardados) : []
+  })
+
+  const [usuarioLogueado, setUsuarioLogueado] = useState(() => {
+    const usuarioGuardado = localStorage.getItem('usuarioLogueado')
+    return usuarioGuardado ? JSON.parse(usuarioGuardado) : null
+  })
 
   const [formulario, setFormulario] = useState({
     nombre: '',
@@ -44,6 +56,22 @@ function App() {
       rol: 'admin'
     }
   ]
+
+  useEffect(() => {
+    localStorage.setItem('productos', JSON.stringify(productos))
+  }, [productos])
+
+  useEffect(() => {
+    localStorage.setItem('pedidos', JSON.stringify(pedidos))
+  }, [pedidos])
+
+  useEffect(() => {
+    if (usuarioLogueado) {
+      localStorage.setItem('usuarioLogueado', JSON.stringify(usuarioLogueado))
+    } else {
+      localStorage.removeItem('usuarioLogueado')
+    }
+  }, [usuarioLogueado])
 
   const iniciarSesion = (correo, clave) => {
     const usuarioEncontrado = usuarios.find(
